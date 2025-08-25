@@ -1,0 +1,11 @@
+{
+  "file_name": "thesis.docx",
+  "size_kb": 880,
+  "entropy": 5.2,
+  "api_calls": { "CreateFile": 4, "ReadFile": 120, "WriteFile": 12, "CryptEncrypt": 0 },
+  "fs_activity": { "files_created": 1, "files_renamed": 0, "extensions_targeted": [] },
+  "network": { "dns_queries": 0, "suspicious_domains": 0, "http_posts": 0 },
+  "persistence": { "registry_run_keys": 0, "scheduled_tasks": 0 },
+  "anti_vm": { "suspicious_instructions": false, "sleep_skips": 0 },
+  "label": "benign"
+}

@@ -1,0 +1,11 @@
+{
+  "file_name": "chrome_session.dat",
+  "size_kb": 15360,
+  "entropy": 6.0,
+  "api_calls": { "CreateFile": 10, "ReadFile": 400, "WriteFile": 60, "CryptEncrypt": 0 },
+  "fs_activity": { "files_created": 2, "files_renamed": 1, "extensions_targeted": [] },
+  "network": { "dns_queries": 12, "suspicious_domains": 0, "http_posts": 0 },
+  "persistence": { "registry_run_keys": 0, "scheduled_tasks": 0 },
+  "anti_vm": { "suspicious_instructions": false, "sleep_skips": 0 },
+  "label": "benign"
+}

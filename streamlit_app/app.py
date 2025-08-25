@@ -7,11 +7,16 @@ from pathlib import Path
 from datetime import datetime
 from utils.feature_map import extract_features, FEATURES
 
-st.set_page_config(page_title="Air-Gapped USB AI Simulator", page_icon="🛡️")
+st.set_page_config(
+    page_title="Air-Gapped USB Malware Simulator",
+    page_icon="🛡️",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
 
 # Paths
 MODEL_PATH = Path("model/model.pkl")
-DATA_DIR = Path(__file__).parent.parent / "data"
+DATA_DIR = Path(__file__).parent.parent / "data" / "usb"
 samples = sorted([p.name for p in DATA_DIR.glob("*.json")])
 LOG_DIR = Path("../logs"); LOG_DIR.mkdir(exist_ok=True)
 LOG_FILE = LOG_DIR / "events.jsonl"
@@ -65,12 +70,18 @@ def predict_one(log_dict):
 st.title("🛡️ Air-Gapped USB Malware Detection — Online Simulation")
 
 # USB simulation sidebar
+st.sidebar.header("📂 USB Controller (Simulated)")
+
 samples = sorted([p.name for p in DATA_DIR.glob("*.json")])
-st.sidebar.header("USB Controller (Simulated)")
-choice = st.sidebar.selectbox("Insert USB & pick sample", samples)
-multi = st.sidebar.checkbox("Multi-USB (select multiple)")
+choice = st.sidebar.selectbox("Select a USB sample", samples)
+
+multi = st.sidebar.checkbox("Enable Multi-USB Scan")
 if multi:
-    choice_multi = st.sidebar.multiselect("Pick multiple samples", samples, default=samples[:2])
+    choice_multi = st.sidebar.multiselect(
+        "Select multiple samples",
+        samples,
+        default=samples[:2]
+    )
 
 st.subheader("USB Firewall ➜ Sandbox ➜ AI Verdict ➜ Secure Log")
 
