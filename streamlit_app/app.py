@@ -1,4 +1,8 @@
+
+
 # streamlit_app/app.py - Air-Gapped USB AI Simulator with Visualizations
+import sys, os
+sys.path.insert(0, os.path.abspath(os.getcwd()))
 
 import streamlit as st
 import json, os, hashlib, joblib
@@ -20,7 +24,8 @@ st.set_page_config(
 # Paths
 MODEL_PATH = Path("model/model.pkl")
 DATA_DIR = Path(__file__).parent.parent / "data" / "usb"
-LOG_DIR = Path("../logs"); LOG_DIR.mkdir(exist_ok=True)
+LOG_DIR = Path(os.path.abspath(os.path.join(os.getcwd(), "logs")))
+LOG_DIR.mkdir(exist_ok=True)
 LOG_FILE = LOG_DIR / "events.jsonl"
 CHAIN_FILE = LOG_DIR / "chain.hash"
 
@@ -41,13 +46,21 @@ def load_prev_hash():
     return "0"*64  # genesis
 
 def append_log_and_chain(record: dict):
+    import uuid
+    # Get previous hash
+    prev = load_prev_hash()
+    record['id'] = str(uuid.uuid4())
+    record['prev_hash'] = prev or ''
+    # For compatibility, use sample or file_name
+    file_name = record.get('sample') or record.get('file_name', '')
+    # Compute hash
+    data = f"{record['id']}{record['ts']}{file_name}{record['verdict']}{record.get('confidence', '')}{prev or ''}"
+    record['hash'] = sha256_hex(data.encode('utf-8'))
     # Append record to JSONL
     with open(LOG_FILE, "a", encoding="utf-8") as f:
         f.write(json.dumps(record, ensure_ascii=False) + "\n")
     # Update hash chain
-    prev = load_prev_hash()
-    curr_hash = sha256_hex((prev + json.dumps(record, sort_keys=True)).encode("utf-8"))
-    CHAIN_FILE.write_text(curr_hash)
+    CHAIN_FILE.write_text(record['hash'])
 
 # AI prediction
 def predict_one(log_dict):
@@ -159,6 +172,13 @@ with col2:
     if CHAIN_FILE.exists():
         st.download_button("⬇️ Download chain.hash", data=CHAIN_FILE.read_bytes(), file_name="chain.hash")
     st.caption("Each record is chained via SHA-256 (prev_hash + record). Any edit breaks the chain.")
+
+    st.subheader("✅ Log Integrity Checker")
+    if st.button("Run Integrity Check"):
+        import subprocess
+        result = subprocess.run(["python", "utils/log_integrity_checker.py"], capture_output=True, text=True)
+        st.code(result.stdout or result.stderr)
+
     st.subheader("⏱️ USB Event Timeline")
     df_logs = load_event_logs()
 if not df_logs.empty:

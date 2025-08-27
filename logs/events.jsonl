@@ -1,1 +1,1 @@
-{"ts": "2025-08-25T11:22:39.608866Z", "sample": "benign_sample.json", "verdict": "Malicious", "confidence": 1.0}
+{"ts": "2025-08-27T12:35:23.078836Z", "sample": "benign_sample.json", "verdict": "Malicious", "confidence": 1.0, "raw_log_sha256": "fc9d2c884444913b7551f7f17586c265714e6bb7440f49ce6170b092e6c9c05c", "id": "9286f9a6-3c8e-4f0a-904b-46736bfd49e6", "prev_hash": "", "hash": "4f9e4c6dafe4b602fa594fc4b8a5be7ff6awe18054e219705187f211cb2b7726"}
