@@ -1,0 +1,11 @@
+{
+  "file_name": "photos_backup.zip",
+  "size_kb": 204800,
+  "entropy": 5.8,
+  "api_calls": { "CreateFile": 60, "ReadFile": 300, "WriteFile": 180, "CryptEncrypt": 0 },
+  "fs_activity": { "files_created": 3, "files_renamed": 0, "extensions_targeted": [] },
+  "network": { "dns_queries": 0, "suspicious_domains": 0, "http_posts": 0 },
+  "persistence": { "registry_run_keys": 0, "scheduled_tasks": 0 },
+  "anti_vm": { "suspicious_instructions": false, "sleep_skips": 0 },
+  "label": "benign"
+}

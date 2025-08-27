@@ -1,0 +1,8 @@
+{
+  "file_name": "report.pdf",
+  "size_kb": 220,
+  "entropy": 4.1,
+  "api_calls": { "CreateFile": 2, "ReadFile": 5, "WriteFile": 0 },
+  "fs_activity": { "files_created": 0, "files_renamed": 0 },
+  "label": "benign"
+}

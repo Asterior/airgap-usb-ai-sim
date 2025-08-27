@@ -1,0 +1,11 @@
+{
+    "label": "benign",
+    "size_kb": 512,
+    "entropy": 6.8,
+    "api_CreateFile": 10,
+    "api_ReadFile": 50,
+    "api_WriteFile": 12,
+    "api_CryptEncrypt": 0,
+    "fs_files_created": 12,
+    "fs_files_renamed": 0
+}

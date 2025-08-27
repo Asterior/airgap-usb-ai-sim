@@ -1,0 +1,29 @@
+{
+  "best_model": "logreg",
+  "best_f1": 1.0,
+  "saved_model_path": ".\\models\\best_model_logreg.joblib",
+  "all_results": {
+    "logreg": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "roc_auc": 1.0,
+      "classification_report": "              precision    recall  f1-score   support\n\n           0     1.0000    1.0000    1.0000       961\n           1     1.0000    1.0000    1.0000       639\n\n    accuracy                         1.0000      1600\n   macro avg     1.0000    1.0000    1.0000      1600\nweighted avg     1.0000    1.0000    1.0000      1600\n",
+      "best_params": {
+        "clf__C": 0.01,
+        "clf__penalty": "l2"
+      },
+      "cv_best_score": 1.0
+    },
+    "svm": {
+      "accuracy": 1.0,
+      "f1": 1.0,
+      "roc_auc": 1.0,
+      "classification_report": "              precision    recall  f1-score   support\n\n           0     1.0000    1.0000    1.0000       961\n           1     1.0000    1.0000    1.0000       639\n\n    accuracy                         1.0000      1600\n   macro avg     1.0000    1.0000    1.0000      1600\nweighted avg     1.0000    1.0000    1.0000      1600\n",
+      "best_params": {
+        "clf__C": 0.1,
+        "clf__gamma": "scale"
+      },
+      "cv_best_score": 1.0
+    }
+  }
+}

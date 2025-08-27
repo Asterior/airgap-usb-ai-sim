@@ -1,0 +1,8 @@
+{
+  "file_name": "invoice.exe",
+  "size_kb": 412,
+  "entropy": 7.1,
+  "api_calls": { "CreateFile": 134, "WriteFile": 412, "CryptEncrypt": 35 },
+  "fs_activity": { "files_created": 296, "files_renamed": 278 },
+  "label": "malicious"
+}

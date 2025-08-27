@@ -1,0 +1,11 @@
+{
+  "file_name": "update.exe",
+  "size_kb": 380,
+  "entropy": 6.9,
+  "api_calls": { "CreateFile": 210, "ReadFile": 40, "WriteFile": 420, "CryptEncrypt": 8, "CreateRemoteThread": 2 },
+  "fs_activity": { "files_created": 160, "files_renamed": 140, "extensions_targeted": ["exe","dll","lnk"] },
+  "network": { "dns_queries": 8, "suspicious_domains": 2, "http_posts": 5 },
+  "persistence": { "registry_run_keys": 2, "scheduled_tasks": 1 },
+  "anti_vm": { "suspicious_instructions": true, "sleep_skips": 1 },
+  "label": "malicious"
+}
