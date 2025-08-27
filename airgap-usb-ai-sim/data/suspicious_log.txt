@@ -1,0 +1,1 @@
+USB Inserted; Executed: suspicious.exe; Action: Run

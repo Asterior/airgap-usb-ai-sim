@@ -1,0 +1,11 @@
+{
+  "file_name": "kbdsvc.exe",
+  "size_kb": 96,
+  "entropy": 6.7,
+  "api_calls": { "CreateFile": 40, "ReadFile": 10, "WriteFile": 280, "CryptEncrypt": 0, "CreateRemoteThread": 1 },
+  "fs_activity": { "files_created": 5, "files_renamed": 1, "extensions_targeted": [] },
+  "network": { "dns_queries": 2, "suspicious_domains": 1, "http_posts": 3 },
+  "persistence": { "registry_run_keys": 1, "scheduled_tasks": 0 },
+  "anti_vm": { "suspicious_instructions": true, "sleep_skips": 0 },
+  "label": "malicious"
+}
