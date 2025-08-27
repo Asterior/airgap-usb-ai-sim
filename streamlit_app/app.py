@@ -1,8 +1,11 @@
-# streamlit_app/app.py - Air-Gapped USB AI Simulator
+# streamlit_app/app.py - Air-Gapped USB AI Simulator with Visualizations
 
 import streamlit as st
 import json, os, hashlib, joblib
 import numpy as np
+import pandas as pd
+import altair as alt
+import matplotlib.pyplot as plt
 from pathlib import Path
 from datetime import datetime
 from utils.feature_map import extract_features, FEATURES
@@ -17,7 +20,6 @@ st.set_page_config(
 # Paths
 MODEL_PATH = Path("model/model.pkl")
 DATA_DIR = Path(__file__).parent.parent / "data" / "usb"
-samples = sorted([p.name for p in DATA_DIR.glob("*.json")])
 LOG_DIR = Path("../logs"); LOG_DIR.mkdir(exist_ok=True)
 LOG_FILE = LOG_DIR / "events.jsonl"
 CHAIN_FILE = LOG_DIR / "chain.hash"
@@ -50,10 +52,11 @@ def append_log_and_chain(record: dict):
 # AI prediction
 def predict_one(log_dict):
     x = extract_features(log_dict).reshape(1, -1)
+
     
     if hasattr(model, "predict_proba"):
         proba_all = model.predict_proba(x)
-        # If only one class in model, assign 0 or 1 probability
+        # Handle single-class model
         if proba_all.shape[1] == 1:
             proba = float(proba_all[0][0])
             pred = 1 if proba >= 0.5 else 0
@@ -66,37 +69,47 @@ def predict_one(log_dict):
 
     return pred, proba
 
+# Visualization: Feature Importance
+def show_feature_importance():
+    if hasattr(model, "feature_importances_"):
+        importances = model.feature_importances_
+        df = pd.DataFrame({"Feature": FEATURES, "Importance": importances})
+        df = df.sort_values("Importance", ascending=False)
+        st.subheader("📊 Feature Importance (RandomForest)")
+        fig, ax = plt.subplots()
+        ax.barh(df["Feature"], df["Importance"])
+        ax.invert_yaxis()
+        st.pyplot(fig)
 
+# Visualization: Event timeline
+def show_timeline(log_file=LOG_FILE):
+    if log_file.exists():
+        df = pd.read_json(log_file, lines=True)
+        df['ts'] = pd.to_datetime(df['ts'])
+        st.subheader("⏱️ Event Timeline")
+        st.line_chart(df.set_index('ts')['confidence'])
+
+# --- Streamlit Layout ---
 st.title("🛡️ Air-Gapped USB Malware Detection — Online Simulation")
 
-# USB simulation sidebar
+# Sidebar
 st.sidebar.header("📂 USB Controller (Simulated)")
-
 samples = sorted([p.name for p in DATA_DIR.glob("*.json")])
 choice = st.sidebar.selectbox("Select a USB sample", samples)
-
 multi = st.sidebar.checkbox("Enable Multi-USB Scan")
 if multi:
-    choice_multi = st.sidebar.multiselect(
-        "Select multiple samples",
-        samples,
-        default=samples[:2]
-    )
+    choice_multi = st.sidebar.multiselect("Select multiple samples", samples, default=samples[:2])
 
 st.subheader("USB Firewall ➜ Sandbox ➜ AI Verdict ➜ Secure Log")
 
 def run_flow(sample_name):
     p = DATA_DIR / sample_name
     log_dict = json.loads(p.read_text())
-    # Hash original log
     raw_hash = sha256_hex(json.dumps(log_dict, sort_keys=True).encode("utf-8"))
-
-    # AI inference
     pred, proba = predict_one(log_dict)
     verdict = "Malicious" if pred == 1 else "Safe"
     action = "USB power cut (simulated)" if pred == 1 else "Transfer allowed"
 
-    # Tamper-evident record
     record = {
         "ts": datetime.utcnow().isoformat()+"Z",
         "sample": sample_name,
@@ -106,6 +119,16 @@ def run_flow(sample_name):
     }
     append_log_and_chain(record)
     return log_dict, verdict, proba, action
+
+def load_event_logs():
+    if LOG_FILE.exists():
+        records = []
+        with open(LOG_FILE, "r", encoding="utf-8") as f:
+            for line in f:
+                records.append(json.loads(line))
+        return pd.DataFrame(records)
+    return pd.DataFrame()
+
 
 col1, col2 = st.columns(2)
 
@@ -117,6 +140,8 @@ with col1:
             st.info(f"Action: {action}")
             with st.expander("Behavior summary (from sandbox log)"):
                 st.json(d)
+            show_feature_importance()
+            show_timeline()
     else:
         if st.button("▶️ Scan All Selected"):
             rows = []
@@ -124,6 +149,8 @@ with col1:
                 d, verdict, proba, action = run_flow(s)
                 rows.append((s, verdict, f"{proba:.2f}", action))
             st.table(rows)
+            show_feature_importance()
+            show_timeline()
 
 with col2:
     st.markdown("**Tamper-evident log**")
@@ -132,3 +159,24 @@ with col2:
     if CHAIN_FILE.exists():
         st.download_button("⬇️ Download chain.hash", data=CHAIN_FILE.read_bytes(), file_name="chain.hash")
     st.caption("Each record is chained via SHA-256 (prev_hash + record). Any edit breaks the chain.")
+    st.subheader("⏱️ USB Event Timeline")
+    df_logs = load_event_logs()
+if not df_logs.empty:
+    # Convert timestamp to datetime
+    df_logs["ts"] = pd.to_datetime(df_logs["ts"])
+    
+    timeline = alt.Chart(df_logs).mark_circle(size=100).encode(
+        x="ts:T",
+        y=alt.Y("sample:N", title="USB Sample"),
+        color=alt.Color("verdict:N", scale=alt.Scale(domain=["Malicious","Safe"], range=["red","green"])),
+        tooltip=["ts:T", "sample:N", "verdict:N", "confidence:Q"]
+    ).properties(
+        width=400,
+        height=300,
+        title="Timeline of USB Scan Events"
+    )
+    
+    st.altair_chart(timeline)
+else:
+    st.info("No scan events yet to display in the timeline.")
+
